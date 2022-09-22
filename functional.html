@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>FOOD IS THE BEST</title>
+    <!-- Bulma Version 0.9.0-->
+    <link rel='stylesheet' href='https://unpkg.com/bulma@0.9.0/css/bulma.min.css'>
+    <link rel="stylesheet" href="./css/kanban.css">
+    <script src="jquery-3.6.1.min.js"></script>
+    <script src="./main.js"></script>
+</head>
+
+<body>
+    <input id="new_recipe_field" class="input is-large" type="search" />
+    <div id="category_list" class="select is-primary">
+        <select id="category_select">
+        </select>
+    </div>
+    <button id="add_recipe_button" class="button is-primary">Add recipe</button>
+    <button id="add_category_button" class="button is-primary">Add category</button>
+    <button id="reset_button" class="button is-danger">Reset</button>
+    <button id="get_random_recipe_button" class="button is-info">Tell me what to eat!!</button>
+    <!-- Final version of the kanban board -->
+    <section class="container">
+        <div class="level-item">
+            <div class="columns is-multiline is-centered cards-container" id="recipe_container">
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
