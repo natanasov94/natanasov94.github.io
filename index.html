@@ -1,18 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dice & Card Roller</title>
+    <title>Dice, Cards & Dials</title>
+
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
             padding: 16px;
             font-family: system-ui, sans-serif;
-            background: #f2f2f2;
-            color: #222;
+            background: #181818;
+            color: #eee;
         }
 
         .container {
@@ -21,12 +26,18 @@
             margin: 0 auto;
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             text-align: center;
         }
 
-        h1 { margin: 10px 0 24px; }
-        h2 { margin: 28px 0 16px; }
+        h1 {
+            margin: 10px 0 24px;
+        }
+
+        h2 {
+            margin: 28px 0 16px;
+        }
 
         .dice-set {
             display: grid;
@@ -42,13 +53,15 @@
             margin-bottom: 5px;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 10px;
             font-size: 18px;
-            border: 1px solid #bbb;
+            border: 1px solid #444;
             border-radius: 7px;
-            background: white;
+            background: #252525;
+            color: #eee;
         }
 
         button {
@@ -57,13 +70,21 @@
             padding: 11px 14px;
             font-size: 17px;
             cursor: pointer;
+            background: #333;
+            color: #eee;
         }
 
-        .remove, .secondary {
-            background: #ddd;
+        button:hover {
+            background: #444;
         }
 
-        .add, .roll {
+        .remove,
+        .secondary {
+            background: #333;
+        }
+
+        .add,
+        .roll {
             width: 100%;
             margin: 8px 0;
         }
@@ -71,7 +92,7 @@
         .roll {
             margin-top: 12px;
             padding: 15px;
-            background: #333;
+            background: #555;
             color: white;
             font-size: 20px;
             font-weight: bold;
@@ -82,7 +103,7 @@
         }
 
         .result-set {
-            background: white;
+            background: #222;
             border-radius: 10px;
             padding: 12px;
             margin-bottom: 12px;
@@ -105,14 +126,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #333;
+            border: 2px solid #555;
             border-radius: 9px;
             font-size: 21px;
             font-weight: bold;
-            background: #fafafa;
+            background: #2a2a2a;
         }
 
-        .set-total, .deck-status {
+        .set-total,
+        .deck-status {
             margin-top: 10px;
             font-weight: bold;
         }
@@ -125,7 +147,7 @@
         }
 
         .card-controls {
-            background: white;
+            background: #222;
             border-radius: 10px;
             padding: 12px;
         }
@@ -145,7 +167,7 @@
         }
 
         .draw-row button {
-            background: #333;
+            background: #555;
             color: white;
             font-weight: bold;
         }
@@ -160,8 +182,8 @@
         .card {
             width: 62px;
             height: 86px;
-            background: white;
-            border: 2px solid #333;
+            background: #f5f5f5;
+            border: 2px solid #aaa;
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -188,10 +210,68 @@
             flex: 1;
         }
 
-        .empty {
-            color: #666;
+        /* -------------------------
+       Dials
+       ------------------------- */
+
+        .dials {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dial {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 8px;
+            align-items: center;
+            background: #222;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .dial-name {
+            min-width: 0;
+        }
+
+        .dial-name input {
+            font-size: 17px;
+        }
+
+        .dial-button {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .dial-value {
+            width: 110px;
             text-align: center;
-            margin-top: 12px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .dial-remove {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            background: #333;
+        }
+
+        @media (max-width: 500px) {
+            .dial {
+                grid-template-columns: 1fr auto auto;
+            }
+
+            .dial-name {
+                grid-column: span 3;
+            }
+
+            .dial-value {
+                width: 90px;
+            }
         }
 
         @media (max-width: 400px) {
@@ -212,359 +292,857 @@
             }
         }
     </style>
+
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <h1>🎲 Dice & Cards</h1>
+        <h1>🎲 Dice, Cards and Dials</h1>
 
-    <h2>Dice</h2>
+        <!-- =========================
+     Dice
+     ========================= -->
 
-    <div id="sets"></div>
+        <h2>Dice</h2>
 
-    <button class="add secondary" onclick="addSet()">+ Add Dice Set</button>
-    <button class="roll" onclick="rollAll()">Roll All 🎲</button>
+        <div id="sets"></div>
 
-    <div id="results" class="results"></div>
+        <button class="add secondary" onclick="addSet()">
+            + Add Dice Set
+        </button>
 
-    <h2>Cards</h2>
+        <button class="roll" onclick="rollAll()">
+            Roll All 🎲
+        </button>
 
-    <div class="card-controls">
+        <div id="results" class="results"></div>
 
-        <div class="card-control-row">
-            <div class="field">
-                <label for="deckCount">Decks</label>
-                <input
-                    id="deckCount"
-                    type="number"
-                    min="1"
-                    max="20"
-                    value="1"
-                    onchange="resetDeck()"
-                >
+
+        <!-- =========================
+     Cards
+     ========================= -->
+
+        <h2>Cards</h2>
+
+        <div class="card-controls">
+
+            <div class="card-control-row">
+
+                <div class="field">
+                    <label for="deckCount">Decks</label>
+
+                    <input id="deckCount" type="number" min="1" max="20" value="1" onchange="resetDeck()">
+                </div>
+
+                <div class="field">
+                    <label for="jokerCount">Jokers</label>
+
+                    <input id="jokerCount" type="number" min="0" max="4" value="0" onchange="resetDeck()">
+                </div>
+
             </div>
 
             <div class="field">
-                <label for="jokerCount">Jokers</label>
-                <input
-                    id="jokerCount"
-                    type="number"
-                    min="0"
-                    max="4"
-                    value="0"
-                    onchange="resetDeck()"
-                >
-            </div>
-        </div>
+                <label for="cardMode">After drawing</label>
 
-        <div class="field">
-            <label for="cardMode">After drawing</label>
-            <select id="cardMode">
-                <option value="remove">Remove card from deck</option>
-                <option value="return">Shuffle card back into deck</option>
-            </select>
-        </div>
+                <select id="cardMode">
+                    <option value="remove">
+                        Remove card from deck
+                    </option>
 
-        <div class="draw-row" style="margin-top: 12px;">
-            <div class="field">
-                <label for="drawCount">Cards to draw</label>
-                <input
-                    id="drawCount"
-                    type="number"
-                    min="1"
-                    max="104" value="1"
-                >
+                    <option value="return">
+                        Shuffle card back into deck
+                    </option>
+                </select>
             </div>
 
-            <button onclick="drawCards()">Draw 🃏</button>
+            <div class="draw-row" style="margin-top: 12px;">
+
+                <div class="field">
+                    <label for="drawCount">Cards to draw</label>
+
+                    <input id="drawCount" type="number" min="1" max="104" value="1">
+                </div>
+
+                <button onclick="drawCards()">
+                    Draw 🃏
+                </button>
+
+            </div>
+
+            <div id="deckStatus" class="deck-status"></div>
+
+            <div id="cardResults" class="card-results"></div>
+
+            <div class="card-actions">
+
+                <button class="secondary" onclick="shuffleDeck()">
+                    Shuffle Deck
+                </button>
+
+                <button class="secondary" onclick="resetDeck()">
+                    Reset Deck
+                </button>
+
+            </div>
+
         </div>
 
-        <div id="deckStatus" class="deck-status"></div>
 
-        <div id="cardResults" class="card-results"></div>
+        <!-- =========================
+     Dials
+     ========================= -->
 
-        <div class="card-actions">
-            <button class="secondary" onclick="shuffleDeck()">Shuffle Deck</button>
-            <button class="secondary" onclick="resetDeck()">Reset Deck</button>
-        </div>
+        <h2>Dials</h2>
+
+        <div id="dials" class="dials"></div>
+
+        <button class="add secondary" onclick="addDial()">
+            + Add Dial
+        </button>
+
     </div>
 
-</div>
+    <script>
 
-<script>
-    // -------------------------
-    // Dice
-    // -------------------------
+        // =========================================================
+        // Dice
+        // =========================================================
 
-    let sets = [];
+        let sets = [];
 
-    addSet(1, 6);
+        addSet(1, 6);
 
-    function addSet(count = 1, sides = 6) {
-        sets.push({ count, sides });
-        renderSets();
-    }
 
-    function removeSet(index) {
-        sets.splice(index, 1);
+        function addSet(count = 1, sides = 6) {
 
-        if (sets.length === 0) {
-            addSet();
-        } else {
+            sets.push({
+                count,
+                sides
+            });
+
             renderSets();
         }
-    }
 
-    function updateSet(index, property, value) {
-        value = Number(value);
 
-        if (property === "count") {
-            value = Math.max(1, Math.min(100, value));
+        function removeSet(index) {
+
+            sets.splice(index, 1);
+
+            if (sets.length === 0) {
+                addSet();
+            } else {
+                renderSets();
+            }
         }
 
-        if (property === "sides") {
-            value = Math.max(2, Math.min(1000, value));
+
+        function updateSet(index, property, value) {
+
+            value = Number(value);
+
+            if (property === "count") {
+                value = Math.max(1, Math.min(100, value));
+            }
+
+            if (property === "sides") {
+                value = Math.max(2, Math.min(1000, value));
+            }
+
+            sets[index][property] = value;
         }
 
-        sets[index][property] = value;
-    }
 
-    function renderSets() {
-        const container = document.getElementById("sets");
-        container.innerHTML = "";
+        function renderSets() {
 
-        sets.forEach((set, index) => {
-            const row = document.createElement("div");
-            row.className = "dice-set";
+            const container = document.getElementById("sets");
 
-            row.innerHTML = `
+            container.innerHTML = "";
+
+            sets.forEach((set, index) => {
+
+                const row = document.createElement("div");
+
+                row.className = "dice-set";
+
+                row.innerHTML = `
                 <div class="field">
                     <label>Dice</label>
-                    <input type="number" min="1" max="100"
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="100"
                         value="${set.count}"
-                        onchange="updateSet(${index}, 'count', this.value)">
+                        onchange="updateSet(
+                            ${index},
+                            'count',
+                            this.value
+                        )"
+                    >
                 </div>
 
                 <div class="field">
                     <label>Sides</label>
-                    <input type="number" min="2" max="1000"
+
+                    <input
+                        type="number"
+                        min="2"
+                        max="1000"
                         value="${set.sides}"
-                        onchange="updateSet(${index}, 'sides', this.value)">
+                        onchange="updateSet(
+                            ${index},
+                            'sides',
+                            this.value
+                        )"
+                    >
                 </div>
 
-                <button class="remove" onclick="removeSet(${index})">✕</button>
+                <button
+                    class="remove"
+                    onclick="removeSet(${index})"
+                >
+                    ✕
+                </button>
             `;
 
-            container.appendChild(row);
-        });
-    }
+                container.appendChild(row);
+            });
+        }
 
-    function rollAll() {
-        const resultsContainer = document.getElementById("results");
-        resultsContainer.innerHTML = "";
 
-        let grandTotal = 0;
+        function rollAll() {
 
-        sets.forEach(set => {
-            const resultSet = document.createElement("div");
-            resultSet.className = "result-set";
+            const resultsContainer =
+                document.getElementById("results");
 
-            const title = document.createElement("div");
-            title.className = "result-title";
-            title.textContent = `${set.count} × d${set.sides}`;
-            resultSet.appendChild(title);
+            resultsContainer.innerHTML = "";
 
-            const diceContainer = document.createElement("div");
-            diceContainer.className = "dice";
+            let grandTotal = 0;
 
-            let setTotal = 0;
+            sets.forEach(set => {
 
-            for (let i = 0; i < set.count; i++) {
-                const result = Math.floor(Math.random() * set.sides) + 1;
+                const resultSet =
+                    document.createElement("div");
 
-                setTotal += result;
-                grandTotal += result;
+                resultSet.className = "result-set";
 
-                const die = document.createElement("div");
-                die.className = "die";
-                die.textContent = result;
-                diceContainer.appendChild(die);
+                const title =
+                    document.createElement("div");
+
+                title.className = "result-title";
+
+                title.textContent =
+                    `${set.count} × d${set.sides}`;
+
+                resultSet.appendChild(title);
+
+
+                const diceContainer =
+                    document.createElement("div");
+
+                diceContainer.className = "dice";
+
+                let setTotal = 0;
+
+
+                for (let i = 0; i < set.count; i++) {
+
+                    const result =
+                        Math.floor(
+                            Math.random() * set.sides
+                        ) + 1;
+
+                    setTotal += result;
+                    grandTotal += result;
+
+
+                    const die =
+                        document.createElement("div");
+
+                    die.className = "die";
+
+                    die.textContent = result;
+
+                    diceContainer.appendChild(die);
+                }
+
+
+                resultSet.appendChild(diceContainer);
+
+
+                const total =
+                    document.createElement("div");
+
+                total.className = "set-total";
+
+                total.textContent =
+                    `Set total: ${setTotal}`;
+
+                resultSet.appendChild(total);
+
+                resultsContainer.appendChild(resultSet);
+            });
+
+
+            const grandTotalElement =
+                document.createElement("div");
+
+            grandTotalElement.className =
+                "grand-total";
+
+            grandTotalElement.textContent =
+                `Grand total: ${grandTotal}`;
+
+            resultsContainer.appendChild(
+                grandTotalElement
+            );
+        }
+
+
+        // =========================================================
+        // Cards
+        // =========================================================
+
+        const suits = [
+
+            {
+                symbol: "♠",
+                name: "Spades",
+                color: "black"
+            },
+
+            {
+                symbol: "♥",
+                name: "Hearts",
+                color: "red"
+            },
+
+            {
+                symbol: "♦",
+                name: "Diamonds",
+                color: "red"
+            },
+
+            {
+                symbol: "♣",
+                name: "Clubs",
+                color: "black"
             }
 
-            resultSet.appendChild(diceContainer);
+        ];
 
-            const total = document.createElement("div");
-            total.className = "set-total";
-            total.textContent = `Set total: ${setTotal}`;
-            resultSet.appendChild(total);
 
-            resultsContainer.appendChild(resultSet);
-        });
+        const ranks = [
+            "A", "2", "3", "4", "5", "6", "7",
+            "8", "9", "10", "J", "Q", "K"
+        ];
 
-        const grandTotalElement = document.createElement("div");
-        grandTotalElement.className = "grand-total";
-        grandTotalElement.textContent = `Grand total: ${grandTotal}`;
 
-        resultsContainer.appendChild(grandTotalElement);
-    }
+        let deck = [];
+        let drawnCards = [];
 
-    // -------------------------
-    // Cards
-    // -------------------------
 
-    const suits = [
-        { symbol: "♠", name: "Spades", color: "black" },
-        { symbol: "♥", name: "Hearts", color: "red" },
-        { symbol: "♦", name: "Diamonds", color: "red" },
-        { symbol: "♣", name: "Clubs", color: "black" }
-    ];
+        function createDeck() {
 
-    const ranks = [
-        "A", "2", "3", "4", "5", "6", "7",
-        "8", "9", "10", "J", "Q", "K"
-    ];
+            const deckCount =
+                Math.max(
+                    1,
+                    Math.min(
+                        20,
+                        Number(
+                            document.getElementById(
+                                "deckCount"
+                            ).value
+                        ) || 1
+                    )
+                );
 
-    let deck = [];
-    let drawnCards = [];
 
-    function createDeck() {
-        const deckCount = Math.max(
-            1,
-            Math.min(20, Number(document.getElementById("deckCount").value) || 1)
-        );
+            const jokerCount =
+                Math.max(
+                    0,
+                    Math.min(
+                        4,
+                        Number(
+                            document.getElementById(
+                                "jokerCount"
+                            ).value
+                        ) || 0
+                    )
+                );
 
-        const jokerCount = Math.max(
-            0,
-            Math.min(4, Number(document.getElementById("jokerCount").value) || 0)
-        );
 
-        document.getElementById("deckCount").value = deckCount;
-        document.getElementById("jokerCount").value = jokerCount;
+            document.getElementById(
+                "deckCount"
+            ).value = deckCount;
 
-        const newDeck = [];
+            document.getElementById(
+                "jokerCount"
+            ).value = jokerCount;
 
-        for (let d = 0; d < deckCount; d++) {
-            for (const suit of suits) {
-                for (const rank of ranks) {
+
+            const newDeck = [];
+
+
+            for (let d = 0; d < deckCount; d++) {
+
+                for (const suit of suits) {
+
+                    for (const rank of ranks) {
+
+                        newDeck.push({
+
+                            rank,
+
+                            suit: suit.symbol,
+
+                            color: suit.color,
+
+                            text: `${rank}${suit.symbol}`
+
+                        });
+
+                    }
+                }
+
+
+                for (let j = 0; j < jokerCount; j++) {
+
                     newDeck.push({
-                        rank,
-                        suit: suit.symbol,
-                        color: suit.color,
-                        text: `${rank}${suit.symbol}`
+
+                        rank: "Joker",
+
+                        suit: "",
+
+                        color: "black",
+
+                        text: "🃏"
+
                     });
                 }
             }
 
-            for (let j = 0; j < jokerCount; j++) {
-                newDeck.push({
-                    rank: "Joker",
-                    suit: "",
-                    color: "black",
-                    text: "🃏"
-                });
-            }
+
+            return newDeck;
         }
 
-        return newDeck;
-    }
 
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+        function shuffle(array) {
 
-            [array[i], array[j]] = [array[j], array[i]];
-        }
+            for (
+                let i = array.length - 1;
+                i > 0;
+                i--
+            ) {
 
-        return array;
-    }
+                const j =
+                    Math.floor(
+                        Math.random() * (i + 1)
+                    );
 
-    function resetDeck() {
-        deck = shuffle(createDeck());
-        drawnCards = [];
 
-        document.getElementById("cardResults").innerHTML = "";
-        updateDeckStatus();
-    }
-
-    function shuffleDeck() {
-        if (deck.length === 0) {
-            deck = createDeck();
-        }
-
-        deck = shuffle(deck);
-        updateDeckStatus();
-    }
-
-    function drawCards() {
-        if (deck.length === 0) {
-            resetDeck();
-        }
-
-        let amount = Number(document.getElementById("drawCount").value) || 1;
-        amount = Math.max(1, Math.min(deck.length, amount));
-
-        document.getElementById("drawCount").value = amount;
-
-        const mode = document.getElementById("cardMode").value;
-        const results = [];
-
-        for (let i = 0; i < amount; i++) {
-            if (deck.length === 0) break;
-
-            const card = deck.pop();
-            results.push(card);
-
-            if (mode === "remove") {
-                drawnCards.push(card);
-            }
-        }
-
-        if (mode === "return") {
-            // Each drawn card is returned immediately, then the deck is shuffled.
-            deck.push(...results);
-            shuffle(deck);
-        }
-
-        displayCards(results);
-        updateDeckStatus();
-    }
-
-    function displayCards(cards) {
-        const container = document.getElementById("cardResults");
-
-        container.innerHTML = "";
-
-        cards.forEach(card => {
-            const element = document.createElement("div");
-            element.className = `card ${card.color}`;
-
-            if (card.rank === "Joker") {
-                element.textContent = "🃏";
-            } else {
-                element.textContent = card.text;
+                [
+                    array[i],
+                    array[j]
+                ] = [
+                        array[j],
+                        array[i]
+                    ];
             }
 
-            container.appendChild(element);
-        });
-    }
+            return array;
+        }
 
-    function updateDeckStatus() {
-        const deckCount = Number(document.getElementById("deckCount").value) || 1;
-        const jokerCount = Number(document.getElementById("jokerCount").value) || 0;
 
-        const totalCards =
-            deckCount * (52 + jokerCount);
+        function resetDeck() {
 
-        document.getElementById("deckStatus").textContent =
-            `${deck.length} cards remaining / ${totalCards} total`;
-    }
+            deck = shuffle(createDeck());
 
-    // Initial setup
-    resetDeck();
-    rollAll();
-</script>
+            drawnCards = [];
+
+            document.getElementById(
+                "cardResults"
+            ).innerHTML = "";
+
+            updateDeckStatus();
+        }
+
+
+        function shuffleDeck() {
+
+            if (deck.length === 0) {
+                deck = createDeck();
+            }
+
+            deck = shuffle(deck);
+
+            updateDeckStatus();
+        }
+
+
+        function drawCards() {
+
+            if (deck.length === 0) {
+                resetDeck();
+            }
+
+
+            let amount =
+                Number(
+                    document.getElementById(
+                        "drawCount"
+                    ).value
+                ) || 1;
+
+
+            amount =
+                Math.max(
+                    1,
+                    Math.min(
+                        deck.length,
+                        amount
+                    )
+                );
+
+
+            document.getElementById(
+                "drawCount"
+            ).value = amount;
+
+
+            const mode =
+                document.getElementById(
+                    "cardMode"
+                ).value;
+
+
+            const results = [];
+
+
+            for (let i = 0; i < amount; i++) {
+
+                if (deck.length === 0) {
+                    break;
+                }
+
+
+                const card = deck.pop();
+
+                results.push(card);
+
+
+                if (mode === "remove") {
+                    drawnCards.push(card);
+                }
+            }
+
+
+            if (mode === "return") {
+
+                deck.push(...results);
+
+                shuffle(deck);
+            }
+
+
+            displayCards(results);
+
+            updateDeckStatus();
+        }
+
+
+        function displayCards(cards) {
+
+            const container =
+                document.getElementById(
+                    "cardResults"
+                );
+
+
+            container.innerHTML = "";
+
+
+            cards.forEach(card => {
+
+                const element =
+                    document.createElement("div");
+
+
+                element.className =
+                    `card ${card.color}`;
+
+
+                if (card.rank === "Joker") {
+
+                    element.textContent = "🃏";
+
+                } else {
+
+                    element.textContent =
+                        card.text;
+                }
+
+
+                container.appendChild(element);
+            });
+        }
+
+
+        function updateDeckStatus() {
+
+            const deckCount =
+                Number(
+                    document.getElementById(
+                        "deckCount"
+                    ).value
+                ) || 1;
+
+
+            const jokerCount =
+                Number(
+                    document.getElementById(
+                        "jokerCount"
+                    ).value
+                ) || 0;
+
+
+            const totalCards =
+                deckCount *
+                (52 + jokerCount);
+
+
+            document.getElementById(
+                "deckStatus"
+            ).textContent =
+                `${deck.length} cards remaining / ${totalCards} total`;
+        }
+
+
+        // =========================================================
+        // Dials
+        // =========================================================
+
+        let dials = [];
+
+        let nextDialId = 1;
+
+
+        function addDial(
+            name = "Dial",
+            value = 0
+        ) {
+
+            dials.push({
+
+                id: nextDialId++,
+
+                name,
+
+                value
+            });
+
+
+            renderDials();
+        }
+
+
+        function removeDial(id) {
+
+            dials =
+                dials.filter(
+                    dial => dial.id !== id
+                );
+
+
+            renderDials();
+        }
+
+
+        function updateDialName(id, value) {
+
+            const dial =
+                dials.find(
+                    dial => dial.id === id
+                );
+
+
+            if (!dial) return;
+
+            dial.name = value;
+        }
+
+
+        function updateDialValue(id, value) {
+
+            const dial =
+                dials.find(
+                    dial => dial.id === id
+                );
+
+
+            if (!dial) return;
+
+
+            value = Number(value);
+
+
+            if (!Number.isFinite(value)) {
+                value = 0;
+            }
+
+
+            value = Math.max(0, value);
+
+
+            dial.value = value;
+
+
+            renderDials();
+        }
+
+
+        function changeDial(id, amount) {
+
+            const dial =
+                dials.find(
+                    dial => dial.id === id
+                );
+
+
+            if (!dial) return;
+
+
+            dial.value =
+                Math.max(
+                    0,
+                    dial.value + amount
+                );
+
+
+            renderDials();
+        }
+
+
+        function renderDials() {
+
+            const container =
+                document.getElementById(
+                    "dials"
+                );
+
+
+            container.innerHTML = "";
+
+
+            dials.forEach(dial => {
+
+                const row =
+                    document.createElement("div");
+
+
+                row.className = "dial";
+
+
+                row.innerHTML = `
+
+                <div class="dial-name">
+                    <input
+                        type="text"
+                        value="${escapeHtml(dial.name)}"
+                        placeholder="Dial name"
+                        onchange="
+                            updateDialName(
+                                ${dial.id},
+                                this.value
+                            )
+                        "
+                    >
+                </div>
+
+
+                <button
+                    class="dial-button"
+                    onclick="
+                        changeDial(
+                            ${dial.id},
+                            -1
+                        )
+                    "
+                >
+                    −
+                </button>
+
+
+                <input
+                    class="dial-value"
+                    type="number"
+                    min="0"
+                    value="${dial.value}"
+                    onchange="
+                        updateDialValue(
+                            ${dial.id},
+                            this.value
+                        )
+                    "
+                >
+
+
+                <button
+                    class="dial-button"
+                    onclick="
+                        changeDial(
+                            ${dial.id},
+                            1
+                        )
+                    "
+                >
+                    +
+                </button>
+
+
+                <button
+                    class="dial-remove"
+                    onclick="
+                        removeDial(
+                            ${dial.id}
+                        )
+                    "
+                >
+                    ✕
+                </button>
+
+            `;
+
+
+                container.appendChild(row);
+            });
+        }
+
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+
+        // =========================================================
+        // Initial setup
+        // =========================================================
+
+        resetDeck();
+
+        rollAll();
+
+    </script>
 
 </body>
+
 </html>
