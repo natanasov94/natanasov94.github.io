@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dice, Cards & Dials</title>
 
+
     <style>
         * {
             box-sizing: border-box;
@@ -37,14 +38,6 @@
 
         h2 {
             margin: 28px 0 16px;
-        }
-
-        .dice-set {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 8px;
-            align-items: end;
-            margin-bottom: 10px;
         }
 
         .field label {
@@ -78,7 +71,6 @@
             background: #444;
         }
 
-        .remove,
         .secondary {
             background: #333;
         }
@@ -96,6 +88,18 @@
             color: white;
             font-size: 20px;
             font-weight: bold;
+        }
+
+        /* =========================
+       Dice
+       ========================= */
+
+        .dice-set {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 8px;
+            align-items: end;
+            margin-bottom: 10px;
         }
 
         .results {
@@ -146,6 +150,10 @@
             margin-top: 20px;
         }
 
+        /* =========================
+       Cards
+       ========================= */
+
         .card-controls {
             background: #222;
             border-radius: 10px;
@@ -159,6 +167,19 @@
             margin-bottom: 12px;
         }
 
+        .seed-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 12px;
+        }
+
+        .seed-row button {
+            background: #555;
+            font-weight: bold;
+        }
+
         .draw-row {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -170,6 +191,10 @@
             background: #555;
             color: white;
             font-weight: bold;
+        }
+
+        .deck-status {
+            margin-bottom: 12px;
         }
 
         .card-results {
@@ -210,9 +235,93 @@
             flex: 1;
         }
 
-        /* -------------------------
+        /* =========================
+       Excluded Cards
+       ========================= */
+
+        .exclude-section {
+            margin-top: 18px;
+            border-top: 1px solid #444;
+            padding-top: 14px;
+        }
+
+        .exclude-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .exclude-title {
+            font-weight: bold;
+        }
+
+        .exclude-clear {
+            font-size: 14px;
+            padding: 7px 10px;
+        }
+
+        .card-picker {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 4px;
+        }
+
+        .picker-card {
+            padding: 7px 2px;
+            min-width: 0;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background: #292929;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .picker-card.red {
+            color: #ff6666;
+        }
+
+        .picker-card.black {
+            color: #eee;
+        }
+
+        .picker-card.excluded {
+            background: #111;
+            color: #555;
+            border-color: #111;
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .joker-picker {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .joker-option {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .joker-option.excluded {
+            background: #111;
+            color: #555;
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .exclude-help {
+            color: #aaa;
+            font-size: 14px;
+            margin: 8px 0 10px;
+        }
+
+        /* =========================
        Dials
-       ------------------------- */
+       ========================= */
 
         .dials {
             display: flex;
@@ -257,7 +366,6 @@
             width: 48px;
             height: 48px;
             padding: 0;
-            background: #333;
         }
 
         @media (max-width: 500px) {
@@ -287,11 +395,22 @@
                 grid-template-columns: 1fr;
             }
 
+            .seed-row,
             .draw-row {
                 grid-template-columns: 1fr;
             }
+
+            .card-picker {
+                gap: 3px;
+            }
+
+            .picker-card {
+                font-size: 12px;
+                padding: 6px 1px;
+            }
         }
     </style>
+
 
 </head>
 
@@ -299,7 +418,8 @@
 
     <div class="container">
 
-        <h1>🎲 Dice, Cards and Dials</h1>
+
+        <h1>🎲 Dice & Cards</h1>
 
         <!-- =========================
      Dice
@@ -331,18 +451,34 @@
             <div class="card-control-row">
 
                 <div class="field">
-                    <label for="deckCount">Decks</label>
-
-                    <input id="deckCount" type="number" min="1" max="20" value="1" onchange="resetDeck()">
-                </div>
-
-                <div class="field">
                     <label for="jokerCount">Jokers</label>
 
                     <input id="jokerCount" type="number" min="0" max="4" value="0" onchange="resetDeck()">
                 </div>
 
+                <div></div>
+
             </div>
+
+
+            <!-- Seed -->
+
+            <div class="seed-row">
+
+                <div class="field">
+                    <label for="seed">Seed</label>
+
+                    <input id="seed" type="number" min="0" step="1" value="12345">
+                </div>
+
+                <button onclick="applySeed()">
+                    Apply Seed
+                </button>
+
+            </div>
+
+
+            <!-- Draw mode -->
 
             <div class="field">
                 <label for="cardMode">After drawing</label>
@@ -358,12 +494,15 @@
                 </select>
             </div>
 
+
+            <!-- Draw -->
+
             <div class="draw-row" style="margin-top: 12px;">
 
                 <div class="field">
                     <label for="drawCount">Cards to draw</label>
 
-                    <input id="drawCount" type="number" min="1" max="104" value="1">
+                    <input id="drawCount" type="number" min="1" max="56" value="1">
                 </div>
 
                 <button onclick="drawCards()">
@@ -372,13 +511,45 @@
 
             </div>
 
+
             <div id="deckStatus" class="deck-status"></div>
+
 
             <div id="cardResults" class="card-results"></div>
 
+
+            <!-- Exclusions -->
+
+            <div class="exclude-section">
+
+                <div class="exclude-header">
+
+                    <div class="exclude-title">
+                        Excluded Cards
+                    </div>
+
+                    <button class="exclude-clear" onclick="clearExclusions()">
+                        Clear All
+                    </button>
+
+                </div>
+
+                <div class="exclude-help">
+                    Tap cards to exclude or include them.
+                    Excluded cards will not appear when the
+                    deck is reset.
+                </div>
+
+                <div id="cardPicker" class="card-picker"></div>
+
+                <div id="jokerPicker" class="joker-picker"></div>
+
+            </div>
+
+
             <div class="card-actions">
 
-                <button class="secondary" onclick="shuffleDeck()">
+                <button class="secondary" onclick="shuffleCurrentDeck()">
                     Shuffle Deck
                 </button>
 
@@ -402,6 +573,7 @@
         <button class="add secondary" onclick="addDial()">
             + Add Dial
         </button>
+
 
     </div>
 
@@ -457,13 +629,15 @@
 
         function renderSets() {
 
-            const container = document.getElementById("sets");
+            const container =
+                document.getElementById("sets");
 
             container.innerHTML = "";
 
             sets.forEach((set, index) => {
 
-                const row = document.createElement("div");
+                const row =
+                    document.createElement("div");
 
                 row.className = "dice-set";
 
@@ -476,11 +650,13 @@
                         min="1"
                         max="100"
                         value="${set.count}"
-                        onchange="updateSet(
-                            ${index},
-                            'count',
-                            this.value
-                        )"
+                        onchange="
+                            updateSet(
+                                ${index},
+                                'count',
+                                this.value
+                            )
+                        "
                     >
                 </div>
 
@@ -492,11 +668,13 @@
                         min="2"
                         max="1000"
                         value="${set.sides}"
-                        onchange="updateSet(
-                            ${index},
-                            'sides',
-                            this.value
-                        )"
+                        onchange="
+                            updateSet(
+                                ${index},
+                                'sides',
+                                this.value
+                            )
+                        "
                     >
                 </div>
 
@@ -529,6 +707,7 @@
 
                 resultSet.className = "result-set";
 
+
                 const title =
                     document.createElement("div");
 
@@ -548,12 +727,17 @@
                 let setTotal = 0;
 
 
-                for (let i = 0; i < set.count; i++) {
+                for (
+                    let i = 0;
+                    i < set.count;
+                    i++
+                ) {
 
                     const result =
                         Math.floor(
                             Math.random() * set.sides
                         ) + 1;
+
 
                     setTotal += result;
                     grandTotal += result;
@@ -642,24 +826,70 @@
 
 
         let deck = [];
+
         let drawnCards = [];
 
+        let excludedCards = new Set();
 
-        function createDeck() {
 
-            const deckCount =
-                Math.max(
-                    1,
-                    Math.min(
-                        20,
-                        Number(
-                            document.getElementById(
-                                "deckCount"
-                            ).value
-                        ) || 1
-                    )
+        // =========================================================
+        // Seeded random number generator
+        // =========================================================
+
+        function createSeededRandom(seed) {
+
+            let state =
+                Number(seed) >>> 0;
+
+
+            return function () {
+
+                state += 0x6D2B79F5;
+
+                let t = state;
+
+                t =
+                    Math.imul(
+                        t ^ (t >>> 15),
+                        t | 1
+                    );
+
+                t ^=
+                    t +
+                    Math.imul(
+                        t ^ (t >>> 7),
+                        t | 61
+                    );
+
+                return (
+                    (t ^ (t >>> 14)) >>> 0
+                ) / 4294967296;
+            };
+        }
+
+
+        function getSeed() {
+
+            let seed =
+                Number(
+                    document.getElementById("seed").value
                 );
 
+
+            if (!Number.isFinite(seed)) {
+                seed = 0;
+            }
+
+
+            return seed >>> 0;
+        }
+
+
+        // =========================================================
+        // Deck creation
+        // =========================================================
+
+        function createDeck() {
 
             const jokerCount =
                 Math.max(
@@ -676,10 +906,6 @@
 
 
             document.getElementById(
-                "deckCount"
-            ).value = deckCount;
-
-            document.getElementById(
                 "jokerCount"
             ).value = jokerCount;
 
@@ -687,42 +913,65 @@
             const newDeck = [];
 
 
-            for (let d = 0; d < deckCount; d++) {
+            for (const suit of suits) {
 
-                for (const suit of suits) {
+                for (const rank of ranks) {
 
-                    for (const rank of ranks) {
+                    const id =
+                        `${rank}${suit.symbol}`;
 
-                        newDeck.push({
 
-                            rank,
-
-                            suit: suit.symbol,
-
-                            color: suit.color,
-
-                            text: `${rank}${suit.symbol}`
-
-                        });
-
+                    if (excludedCards.has(id)) {
+                        continue;
                     }
-                }
 
-
-                for (let j = 0; j < jokerCount; j++) {
 
                     newDeck.push({
 
-                        rank: "Joker",
+                        id,
 
-                        suit: "",
+                        rank,
 
-                        color: "black",
+                        suit: suit.symbol,
 
-                        text: "🃏"
+                        color: suit.color,
+
+                        text: id
 
                     });
                 }
+            }
+
+
+            for (
+                let j = 1;
+                j <= jokerCount;
+                j++
+            ) {
+
+                const id = `Joker${j}`;
+
+
+                if (excludedCards.has(id)) {
+                    continue;
+                }
+
+
+                newDeck.push({
+
+                    id,
+
+                    rank: "Joker",
+
+                    jokerNumber: j,
+
+                    suit: "",
+
+                    color: "black",
+
+                    text: "🃏"
+
+                });
             }
 
 
@@ -730,7 +979,46 @@
         }
 
 
-        function shuffle(array) {
+        // =========================================================
+        // Seeded shuffle
+        // =========================================================
+
+        function shuffleWithSeed(array, seed) {
+
+            const random =
+                createSeededRandom(seed);
+
+
+            for (
+                let i = array.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    Math.floor(
+                        random() * (i + 1)
+                    );
+
+
+                [
+                    array[i],
+                    array[j]
+                ] = [
+                        array[j],
+                        array[i]
+                    ];
+            }
+
+
+            return array;
+        }
+
+
+        // Normal random shuffle for manually
+        // shuffling the current deck.
+
+        function shuffleRandom(array) {
 
             for (
                 let i = array.length - 1;
@@ -753,13 +1041,26 @@
                     ];
             }
 
+
             return array;
         }
 
 
+        // =========================================================
+        // Reset / Seed
+        // =========================================================
+
         function resetDeck() {
 
-            deck = shuffle(createDeck());
+            excludedCards.clear();
+            deck = createDeck();
+
+            deck =
+                shuffleWithSeed(
+                    deck,
+                    getSeed()
+                );
+
 
             drawnCards = [];
 
@@ -767,26 +1068,41 @@
                 "cardResults"
             ).innerHTML = "";
 
-            updateDeckStatus();
-        }
 
-
-        function shuffleDeck() {
-
-            if (deck.length === 0) {
-                deck = createDeck();
-            }
-
-            deck = shuffle(deck);
+            renderCardPicker();
 
             updateDeckStatus();
         }
 
+
+        function applySeed() {
+
+            resetDeck();
+        }
+
+
+        function shuffleCurrentDeck() {
+
+            deck =
+                shuffleRandom(deck);
+
+            updateDeckStatus();
+        }
+
+
+        // =========================================================
+        // Drawing
+        // =========================================================
 
         function drawCards() {
 
             if (deck.length === 0) {
-                resetDeck();
+
+                alert(
+                    "There are no cards left in the deck."
+                );
+
+                return;
             }
 
 
@@ -822,20 +1138,29 @@
             const results = [];
 
 
-            for (let i = 0; i < amount; i++) {
+            for (
+                let i = 0;
+                i < amount;
+                i++
+            ) {
 
                 if (deck.length === 0) {
                     break;
                 }
 
 
-                const card = deck.pop();
+                const card =
+                    deck.pop();
+
 
                 results.push(card);
 
 
                 if (mode === "remove") {
+
                     drawnCards.push(card);
+
+                    excludedCards.add(card.id);
                 }
             }
 
@@ -844,11 +1169,13 @@
 
                 deck.push(...results);
 
-                shuffle(deck);
+                shuffleRandom(deck);
             }
 
 
             displayCards(results);
+
+            renderCardPicker();
 
             updateDeckStatus();
         }
@@ -875,15 +1202,8 @@
                     `card ${card.color}`;
 
 
-                if (card.rank === "Joker") {
-
-                    element.textContent = "🃏";
-
-                } else {
-
-                    element.textContent =
-                        card.text;
-                }
+                element.textContent =
+                    card.text;
 
 
                 container.appendChild(element);
@@ -891,14 +1211,112 @@
         }
 
 
-        function updateDeckStatus() {
+        // =========================================================
+        // Card exclusion
+        // =========================================================
 
-            const deckCount =
-                Number(
-                    document.getElementById(
-                        "deckCount"
-                    ).value
-                ) || 1;
+        function toggleExcluded(id) {
+
+            if (excludedCards.has(id)) {
+                excludedCards.delete(id);
+            } else {
+                excludedCards.add(id);
+            }
+
+            deck = createDeck();
+
+            deck =
+                shuffleWithSeed(
+                    deck,
+                    getSeed()
+                );
+
+            drawnCards = [];
+
+            document.getElementById(
+                "cardResults"
+            ).innerHTML = "";
+
+            renderCardPicker();
+
+            updateDeckStatus();
+        }
+
+
+        function clearExclusions() {
+
+            excludedCards.clear();
+
+            resetDeck();
+        }
+
+
+        function renderCardPicker() {
+
+            const container =
+                document.getElementById(
+                    "cardPicker"
+                );
+
+
+            container.innerHTML = "";
+
+
+            for (const suit of suits) {
+
+                for (const rank of ranks) {
+
+                    const id =
+                        `${rank}${suit.symbol}`;
+
+
+                    const button =
+                        document.createElement("button");
+
+
+                    button.className =
+                        `picker-card ${suit.color}`;
+
+
+                    if (excludedCards.has(id)) {
+
+                        button.classList.add(
+                            "excluded"
+                        );
+                    }
+
+
+                    button.textContent = id;
+
+
+                    button.title =
+                        excludedCards.has(id)
+                            ? "Excluded. Tap to include."
+                            : "Tap to exclude.";
+
+
+                    button.onclick =
+                        () => toggleExcluded(id);
+
+
+                    container.appendChild(button);
+                }
+            }
+
+
+            renderJokerPicker();
+        }
+
+
+        function renderJokerPicker() {
+
+            const container =
+                document.getElementById(
+                    "jokerPicker"
+                );
+
+
+            container.innerHTML = "";
 
 
             const jokerCount =
@@ -909,15 +1327,65 @@
                 ) || 0;
 
 
+            for (
+                let i = 1;
+                i <= jokerCount;
+                i++
+            ) {
+
+                const id =
+                    `Joker${i}`;
+
+
+                const button =
+                    document.createElement("button");
+
+
+                button.className =
+                    "joker-option";
+
+
+                if (excludedCards.has(id)) {
+
+                    button.classList.add(
+                        "excluded"
+                    );
+                }
+
+
+                button.textContent =
+                    `🃏 Joker ${i}`;
+
+
+                button.onclick =
+                    () => toggleExcluded(id);
+
+
+                container.appendChild(button);
+            }
+        }
+
+
+        function updateDeckStatus() {
+
+            const jokerCount =
+                Number(
+                    document.getElementById(
+                        "jokerCount"
+                    ).value
+                ) || 0;
+
+
             const totalCards =
-                deckCount *
-                (52 + jokerCount);
+                52 + jokerCount;
 
 
             document.getElementById(
                 "deckStatus"
             ).textContent =
-                `${deck.length} cards remaining / ${totalCards} total`;
+                `${deck.length} cards remaining / ` +
+                `${totalCards} total • ` +
+                `${excludedCards.size} excluded`;
         }
 
 
@@ -1062,7 +1530,6 @@
                     >
                 </div>
 
-
                 <button
                     class="dial-button"
                     onclick="
@@ -1074,7 +1541,6 @@
                 >
                     −
                 </button>
-
 
                 <input
                     class="dial-value"
@@ -1089,7 +1555,6 @@
                     "
                 >
 
-
                 <button
                     class="dial-button"
                     onclick="
@@ -1102,7 +1567,6 @@
                     +
                 </button>
 
-
                 <button
                     class="dial-remove"
                     onclick="
@@ -1113,7 +1577,6 @@
                 >
                     ✕
                 </button>
-
             `;
 
 
