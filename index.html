@@ -1,69 +1,570 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FOOD IS THE BEST!!</title>
-    <!-- Bulma Version 0.9.0-->
-    <link rel='stylesheet' href='https://unpkg.com/bulma@0.9.0/css/bulma.min.css'>
-    <link rel="stylesheet" href="./css/kanban.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice & Card Roller</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: system-ui, sans-serif;
+            background: #f2f2f2;
+            color: #222;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        h1 { margin: 10px 0 24px; }
+        h2 { margin: 28px 0 16px; }
+
+        .dice-set {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 8px;
+            align-items: end;
+            margin-bottom: 10px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #bbb;
+            border-radius: 7px;
+            background: white;
+        }
+
+        button {
+            border: none;
+            border-radius: 7px;
+            padding: 11px 14px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .remove, .secondary {
+            background: #ddd;
+        }
+
+        .add, .roll {
+            width: 100%;
+            margin: 8px 0;
+        }
+
+        .roll {
+            margin-top: 12px;
+            padding: 15px;
+            background: #333;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .results {
+            margin-top: 25px;
+        }
+
+        .result-set {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .dice {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .die {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #333;
+            border-radius: 9px;
+            font-size: 21px;
+            font-weight: bold;
+            background: #fafafa;
+        }
+
+        .set-total, .deck-status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .grand-total {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .card-controls {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .card-control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .draw-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .draw-row button {
+            background: #333;
+            color: white;
+            font-weight: bold;
+        }
+
+        .card-results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .card {
+            width: 62px;
+            height: 86px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .red {
+            color: #c62828;
+        }
+
+        .black {
+            color: #111;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .card-actions button {
+            flex: 1;
+        }
+
+        .empty {
+            color: #666;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 400px) {
+            .dice-set {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .remove {
+                grid-column: span 2;
+            }
+
+            .card-control-row {
+                grid-template-columns: 1fr;
+            }
+
+            .draw-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <section class="hero is-info">
-        <div class="hero-body">
-            <div class="container">
-                <div class="card">
-                    <div class="card-content">
-                        <nav class="level">
-                            <div class="level-left">
-                                <div class="level-item">
-                                    <input id="new_recipe_field" class="input is-large" type="search" />
-                                </div>
-                            </div>
-                            <div class="level-right">
-                                <div class="level-item">
-                                    <div id="category_list" class="select is-primary">
-                                        <select id="category_select">
-                                        </select>
-                                    </div>
-                                </div>
 
-                                <div class="level-item">
-                                    <button id="add_recipe_button" class="button is-primary">Add recipe</button>
-                                </div>
-                                <div class="level-item">
-                                    <button id="add_category_button" class="button is-primary">Add category</button>
-                                </div>
-                                <div class="level-item">
-                                    <button id="get_random_recipe_button" class="button is-info">Tell me what to
-                                        eat!!</button>
-                                </div>
-                            </div>
+<div class="container">
 
-                        </nav>
-                    </div>
-                </div>
-                <div class="card">
+    <h1>🎲 Dice & Cards</h1>
 
-                </div>
+    <h2>Dice</h2>
+
+    <div id="sets"></div>
+
+    <button class="add secondary" onclick="addSet()">+ Add Dice Set</button>
+    <button class="roll" onclick="rollAll()">Roll All 🎲</button>
+
+    <div id="results" class="results"></div>
+
+    <h2>Cards</h2>
+
+    <div class="card-controls">
+
+        <div class="card-control-row">
+            <div class="field">
+                <label for="deckCount">Decks</label>
+                <input
+                    id="deckCount"
+                    type="number"
+                    min="1"
+                    max="20"
+                    value="1"
+                    onchange="resetDeck()"
+                >
+            </div>
+
+            <div class="field">
+                <label for="jokerCount">Jokers</label>
+                <input
+                    id="jokerCount"
+                    type="number"
+                    min="0"
+                    max="4"
+                    value="0"
+                    onchange="resetDeck()"
+                >
             </div>
         </div>
-    </section>
-    <br>
-    <section class="container">
-        <div class="level-item">
-            <div class="columns is-multiline is-centered cards-container" id="recipe_container">
-            </div>
+
+        <div class="field">
+            <label for="cardMode">After drawing</label>
+            <select id="cardMode">
+                <option value="remove">Remove card from deck</option>
+                <option value="return">Shuffle card back into deck</option>
+            </select>
         </div>
-    </section>
-    <br>
-    <div class="box has-text-centered">
-        <button id="reset_button" class="button is-danger">Reset data</button>
+
+        <div class="draw-row" style="margin-top: 12px;">
+            <div class="field">
+                <label for="drawCount">Cards to draw</label>
+                <input
+                    id="drawCount"
+                    type="number"
+                    min="1"
+                    max="104" value="1"
+                >
+            </div>
+
+            <button onclick="drawCards()">Draw 🃏</button>
+        </div>
+
+        <div id="deckStatus" class="deck-status"></div>
+
+        <div id="cardResults" class="card-results"></div>
+
+        <div class="card-actions">
+            <button class="secondary" onclick="shuffleDeck()">Shuffle Deck</button>
+            <button class="secondary" onclick="resetDeck()">Reset Deck</button>
+        </div>
     </div>
-    <script src="jquery-3.6.1.min.js"></script>
-    <script src="./main.js"></script>
-</body>
 
+</div>
+
+<script>
+    // -------------------------
+    // Dice
+    // -------------------------
+
+    let sets = [];
+
+    addSet(1, 6);
+
+    function addSet(count = 1, sides = 6) {
+        sets.push({ count, sides });
+        renderSets();
+    }
+
+    function removeSet(index) {
+        sets.splice(index, 1);
+
+        if (sets.length === 0) {
+            addSet();
+        } else {
+            renderSets();
+        }
+    }
+
+    function updateSet(index, property, value) {
+        value = Number(value);
+
+        if (property === "count") {
+            value = Math.max(1, Math.min(100, value));
+        }
+
+        if (property === "sides") {
+            value = Math.max(2, Math.min(1000, value));
+        }
+
+        sets[index][property] = value;
+    }
+
+    function renderSets() {
+        const container = document.getElementById("sets");
+        container.innerHTML = "";
+
+        sets.forEach((set, index) => {
+            const row = document.createElement("div");
+            row.className = "dice-set";
+
+            row.innerHTML = `
+                <div class="field">
+                    <label>Dice</label>
+                    <input type="number" min="1" max="100"
+                        value="${set.count}"
+                        onchange="updateSet(${index}, 'count', this.value)">
+                </div>
+
+                <div class="field">
+                    <label>Sides</label>
+                    <input type="number" min="2" max="1000"
+                        value="${set.sides}"
+                        onchange="updateSet(${index}, 'sides', this.value)">
+                </div>
+
+                <button class="remove" onclick="removeSet(${index})">✕</button>
+            `;
+
+            container.appendChild(row);
+        });
+    }
+
+    function rollAll() {
+        const resultsContainer = document.getElementById("results");
+        resultsContainer.innerHTML = "";
+
+        let grandTotal = 0;
+
+        sets.forEach(set => {
+            const resultSet = document.createElement("div");
+            resultSet.className = "result-set";
+
+            const title = document.createElement("div");
+            title.className = "result-title";
+            title.textContent = `${set.count} × d${set.sides}`;
+            resultSet.appendChild(title);
+
+            const diceContainer = document.createElement("div");
+            diceContainer.className = "dice";
+
+            let setTotal = 0;
+
+            for (let i = 0; i < set.count; i++) {
+                const result = Math.floor(Math.random() * set.sides) + 1;
+
+                setTotal += result;
+                grandTotal += result;
+
+                const die = document.createElement("div");
+                die.className = "die";
+                die.textContent = result;
+                diceContainer.appendChild(die);
+            }
+
+            resultSet.appendChild(diceContainer);
+
+            const total = document.createElement("div");
+            total.className = "set-total";
+            total.textContent = `Set total: ${setTotal}`;
+            resultSet.appendChild(total);
+
+            resultsContainer.appendChild(resultSet);
+        });
+
+        const grandTotalElement = document.createElement("div");
+        grandTotalElement.className = "grand-total";
+        grandTotalElement.textContent = `Grand total: ${grandTotal}`;
+
+        resultsContainer.appendChild(grandTotalElement);
+    }
+
+    // -------------------------
+    // Cards
+    // -------------------------
+
+    const suits = [
+        { symbol: "♠", name: "Spades", color: "black" },
+        { symbol: "♥", name: "Hearts", color: "red" },
+        { symbol: "♦", name: "Diamonds", color: "red" },
+        { symbol: "♣", name: "Clubs", color: "black" }
+    ];
+
+    const ranks = [
+        "A", "2", "3", "4", "5", "6", "7",
+        "8", "9", "10", "J", "Q", "K"
+    ];
+
+    let deck = [];
+    let drawnCards = [];
+
+    function createDeck() {
+        const deckCount = Math.max(
+            1,
+            Math.min(20, Number(document.getElementById("deckCount").value) || 1)
+        );
+
+        const jokerCount = Math.max(
+            0,
+            Math.min(4, Number(document.getElementById("jokerCount").value) || 0)
+        );
+
+        document.getElementById("deckCount").value = deckCount;
+        document.getElementById("jokerCount").value = jokerCount;
+
+        const newDeck = [];
+
+        for (let d = 0; d < deckCount; d++) {
+            for (const suit of suits) {
+                for (const rank of ranks) {
+                    newDeck.push({
+                        rank,
+                        suit: suit.symbol,
+                        color: suit.color,
+                        text: `${rank}${suit.symbol}`
+                    });
+                }
+            }
+
+            for (let j = 0; j < jokerCount; j++) {
+                newDeck.push({
+                    rank: "Joker",
+                    suit: "",
+                    color: "black",
+                    text: "🃏"
+                });
+            }
+        }
+
+        return newDeck;
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+
+        return array;
+    }
+
+    function resetDeck() {
+        deck = shuffle(createDeck());
+        drawnCards = [];
+
+        document.getElementById("cardResults").innerHTML = "";
+        updateDeckStatus();
+    }
+
+    function shuffleDeck() {
+        if (deck.length === 0) {
+            deck = createDeck();
+        }
+
+        deck = shuffle(deck);
+        updateDeckStatus();
+    }
+
+    function drawCards() {
+        if (deck.length === 0) {
+            resetDeck();
+        }
+
+        let amount = Number(document.getElementById("drawCount").value) || 1;
+        amount = Math.max(1, Math.min(deck.length, amount));
+
+        document.getElementById("drawCount").value = amount;
+
+        const mode = document.getElementById("cardMode").value;
+        const results = [];
+
+        for (let i = 0; i < amount; i++) {
+            if (deck.length === 0) break;
+
+            const card = deck.pop();
+            results.push(card);
+
+            if (mode === "remove") {
+                drawnCards.push(card);
+            }
+        }
+
+        if (mode === "return") {
+            // Each drawn card is returned immediately, then the deck is shuffled.
+            deck.push(...results);
+            shuffle(deck);
+        }
+
+        displayCards(results);
+        updateDeckStatus();
+    }
+
+    function displayCards(cards) {
+        const container = document.getElementById("cardResults");
+
+        container.innerHTML = "";
+
+        cards.forEach(card => {
+            const element = document.createElement("div");
+            element.className = `card ${card.color}`;
+
+            if (card.rank === "Joker") {
+                element.textContent = "🃏";
+            } else {
+                element.textContent = card.text;
+            }
+
+            container.appendChild(element);
+        });
+    }
+
+    function updateDeckStatus() {
+        const deckCount = Number(document.getElementById("deckCount").value) || 1;
+        const jokerCount = Number(document.getElementById("jokerCount").value) || 0;
+
+        const totalCards =
+            deckCount * (52 + jokerCount);
+
+        document.getElementById("deckStatus").textContent =
+            `${deck.length} cards remaining / ${totalCards} total`;
+    }
+
+    // Initial setup
+    resetDeck();
+    rollAll();
+</script>
+
+</body>
 </html>
