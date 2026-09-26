@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dice, Cards & Dials</title>
 
-
     <style>
         * {
             box-sizing: border-box;
@@ -91,15 +90,31 @@
         }
 
         /* =========================
-       Dice
-       ========================= */
+           Dice
+           ========================= */
+
+        .dice-settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: #222;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
 
         .dice-set {
             display: grid;
-            grid-template-columns: 1fr 1fr auto;
+            grid-template-columns: 1fr 1fr auto auto;
             gap: 8px;
             align-items: end;
             margin-bottom: 10px;
+        }
+
+        .color-field input {
+            height: 42px;
+            padding: 4px;
+            cursor: pointer;
         }
 
         .results {
@@ -111,6 +126,7 @@
             border-radius: 10px;
             padding: 12px;
             margin-bottom: 12px;
+            border-left: 5px solid;
         }
 
         .result-title {
@@ -125,16 +141,27 @@
         }
 
         .die {
-            width: 52px;
-            height: 52px;
+            width: 80px;
+            min-height: 72px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 2px solid #555;
+            border: 2px solid;
             border-radius: 9px;
-            font-size: 21px;
             font-weight: bold;
             background: #2a2a2a;
+        }
+
+        .die-value {
+            font-size: 21px;
+        }
+
+        .die-coordinate {
+            font-size: 13px;
+            font-weight: normal;
+            margin-top: 3px;
+            opacity: 0.8;
         }
 
         .set-total,
@@ -151,8 +178,8 @@
         }
 
         /* =========================
-       Cards
-       ========================= */
+           Cards
+           ========================= */
 
         .card-controls {
             background: #222;
@@ -236,8 +263,8 @@
         }
 
         /* =========================
-       Excluded Cards
-       ========================= */
+           Excluded Cards
+           ========================= */
 
         .exclude-section {
             margin-top: 18px;
@@ -320,8 +347,8 @@
         }
 
         /* =========================
-       Dials
-       ========================= */
+           Dials
+           ========================= */
 
         .dials {
             display: flex;
@@ -331,7 +358,7 @@
 
         .dial {
             display: grid;
-            grid-template-columns: 1fr auto auto auto;
+            grid-template-columns: 1fr auto auto auto auto;
             gap: 8px;
             align-items: center;
             background: #222;
@@ -370,11 +397,11 @@
 
         @media (max-width: 500px) {
             .dial {
-                grid-template-columns: 1fr auto auto;
+                grid-template-columns: 1fr auto auto auto;
             }
 
             .dial-name {
-                grid-column: span 3;
+                grid-column: span 4;
             }
 
             .dial-value {
@@ -383,11 +410,19 @@
         }
 
         @media (max-width: 400px) {
+            .dice-settings {
+                grid-template-columns: 1fr;
+            }
+
             .dice-set {
                 grid-template-columns: 1fr 1fr;
             }
 
             .remove {
+                grid-column: span 2;
+            }
+
+            .color-field {
                 grid-column: span 2;
             }
 
@@ -411,21 +446,37 @@
         }
     </style>
 
-
 </head>
 
 <body>
 
     <div class="container">
 
-
-        <h1>🎲 Dice & Cards</h1>
+        <h1>🎲 Dice, Cards & Dials</h1>
 
         <!-- =========================
-     Dice
-     ========================= -->
+             Dice
+             ========================= -->
 
         <h2>Dice</h2>
+
+        <!-- Coordinate maximums -->
+
+        <div class="dice-settings">
+
+            <div class="field">
+                <label for="maxX">Maximum X</label>
+
+                <input id="maxX" type="number" min="0" value="10">
+            </div>
+
+            <div class="field">
+                <label for="maxY">Maximum Y</label>
+
+                <input id="maxY" type="number" min="0" value="10">
+            </div>
+
+        </div>
 
         <div id="sets"></div>
 
@@ -441,8 +492,8 @@
 
 
         <!-- =========================
-     Cards
-     ========================= -->
+             Cards
+             ========================= -->
 
         <h2>Cards</h2>
 
@@ -461,8 +512,6 @@
             </div>
 
 
-            <!-- Seed -->
-
             <div class="seed-row">
 
                 <div class="field">
@@ -478,12 +527,11 @@
             </div>
 
 
-            <!-- Draw mode -->
-
             <div class="field">
                 <label for="cardMode">After drawing</label>
 
                 <select id="cardMode">
+
                     <option value="remove">
                         Remove card from deck
                     </option>
@@ -491,11 +539,10 @@
                     <option value="return">
                         Shuffle card back into deck
                     </option>
+
                 </select>
             </div>
 
-
-            <!-- Draw -->
 
             <div class="draw-row" style="margin-top: 12px;">
 
@@ -514,11 +561,8 @@
 
             <div id="deckStatus" class="deck-status"></div>
 
-
             <div id="cardResults" class="card-results"></div>
 
-
-            <!-- Exclusions -->
 
             <div class="exclude-section">
 
@@ -563,8 +607,8 @@
 
 
         <!-- =========================
-     Dials
-     ========================= -->
+             Dials
+             ========================= -->
 
         <h2>Dials</h2>
 
@@ -574,8 +618,8 @@
             + Add Dial
         </button>
 
-
     </div>
+
 
     <script>
 
@@ -585,17 +629,41 @@
 
         let sets = [];
 
-        addSet(1, 6);
+        addSet(1, 6, "#4caf50");
 
 
-        function addSet(count = 1, sides = 6) {
+        function addSet(
+            count = 1,
+            sides = 6,
+            color = getNextDiceColor()
+        ) {
 
             sets.push({
                 count,
-                sides
+                sides,
+                color
             });
 
             renderSets();
+        }
+
+
+        function getNextDiceColor() {
+
+            const colors = [
+                "#4caf50",
+                "#2196f3",
+                "#f44336",
+                "#ff9800",
+                "#9c27b0",
+                "#00bcd4",
+                "#ffeb3b",
+                "#e91e63"
+            ];
+
+            return colors[
+                sets.length % colors.length
+            ];
         }
 
 
@@ -612,6 +680,11 @@
 
 
         function updateSet(index, property, value) {
+
+            if (property === "color") {
+                sets[index].color = value;
+                return;
+            }
 
             value = Number(value);
 
@@ -642,52 +715,96 @@
                 row.className = "dice-set";
 
                 row.innerHTML = `
-                <div class="field">
-                    <label>Dice</label>
+                    <div class="field">
+                        <label>Dice</label>
 
-                    <input
-                        type="number"
-                        min="1"
-                        max="100"
-                        value="${set.count}"
-                        onchange="
-                            updateSet(
-                                ${index},
-                                'count',
-                                this.value
-                            )
-                        "
+                        <input
+                            type="number"
+                            min="1"
+                            max="100"
+                            value="${set.count}"
+                            onchange="
+                                updateSet(
+                                    ${index},
+                                    'count',
+                                    this.value
+                                )
+                            "
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>Sides</label>
+
+                        <input
+                            type="number"
+                            min="2"
+                            max="1000"
+                            value="${set.sides}"
+                            onchange="
+                                updateSet(
+                                    ${index},
+                                    'sides',
+                                    this.value
+                                )
+                            "
+                        >
+                    </div>
+
+                    <div class="field color-field">
+                        <label>Color</label>
+
+                        <input
+                            type="color"
+                            value="${set.color}"
+                            onchange="
+                                updateSet(
+                                    ${index},
+                                    'color',
+                                    this.value
+                                )
+                            "
+                        >
+                    </div>
+
+                    <button
+                        class="remove"
+                        onclick="removeSet(${index})"
                     >
-                </div>
-
-                <div class="field">
-                    <label>Sides</label>
-
-                    <input
-                        type="number"
-                        min="2"
-                        max="1000"
-                        value="${set.sides}"
-                        onchange="
-                            updateSet(
-                                ${index},
-                                'sides',
-                                this.value
-                            )
-                        "
-                    >
-                </div>
-
-                <button
-                    class="remove"
-                    onclick="removeSet(${index})"
-                >
-                    ✕
-                </button>
-            `;
+                        ✕
+                    </button>
+                `;
 
                 container.appendChild(row);
             });
+        }
+
+
+        function getCoordinateMaximum(id) {
+
+            const input =
+                document.getElementById(id);
+
+            let value =
+                Number(input.value);
+
+            if (!Number.isFinite(value)) {
+                value = 0;
+            }
+
+            value = Math.max(0, Math.floor(value));
+
+            input.value = value;
+
+            return value;
+        }
+
+
+        function rollCoordinate(max) {
+
+            return Math.floor(
+                Math.random() * (max + 1)
+            );
         }
 
 
@@ -700,6 +817,13 @@
 
             let grandTotal = 0;
 
+            const maxX =
+                getCoordinateMaximum("maxX");
+
+            const maxY =
+                getCoordinateMaximum("maxY");
+
+
             sets.forEach(set => {
 
                 const resultSet =
@@ -707,11 +831,17 @@
 
                 resultSet.className = "result-set";
 
+                resultSet.style.borderLeftColor =
+                    set.color;
+
 
                 const title =
                     document.createElement("div");
 
                 title.className = "result-title";
+
+                title.style.color =
+                    set.color;
 
                 title.textContent =
                     `${set.count} × d${set.sides}`;
@@ -739,6 +869,13 @@
                         ) + 1;
 
 
+                    const x =
+                        rollCoordinate(maxX);
+
+                    const y =
+                        rollCoordinate(maxY);
+
+
                     setTotal += result;
                     grandTotal += result;
 
@@ -748,7 +885,31 @@
 
                     die.className = "die";
 
-                    die.textContent = result;
+                    die.style.borderColor =
+                        set.color;
+
+
+                    const value =
+                        document.createElement("div");
+
+                    value.className = "die-value";
+
+                    value.textContent =
+                        result;
+
+
+                    const coordinate =
+                        document.createElement("div");
+
+                    coordinate.className =
+                        "die-coordinate";
+
+                    coordinate.textContent =
+                        `(${x}, ${y})`;
+
+
+                    die.appendChild(value);
+                    die.appendChild(coordinate);
 
                     diceContainer.appendChild(die);
                 }
@@ -841,7 +1002,6 @@
             let state =
                 Number(seed) >>> 0;
 
-
             return function () {
 
                 state += 0x6D2B79F5;
@@ -875,11 +1035,9 @@
                     document.getElementById("seed").value
                 );
 
-
             if (!Number.isFinite(seed)) {
                 seed = 0;
             }
-
 
             return seed >>> 0;
         }
@@ -951,11 +1109,9 @@
 
                 const id = `Joker${j}`;
 
-
                 if (excludedCards.has(id)) {
                     continue;
                 }
-
 
                 newDeck.push({
 
@@ -967,7 +1123,7 @@
 
                     suit: "",
 
-                    color: "black",
+                    color: j % 2 === 1 ? "red" : "black",
 
                     text: "🃏"
 
@@ -1015,9 +1171,6 @@
         }
 
 
-        // Normal random shuffle for manually
-        // shuffling the current deck.
-
         function shuffleRandom(array) {
 
             for (
@@ -1053,6 +1206,7 @@
         function resetDeck() {
 
             excludedCards.clear();
+
             deck = createDeck();
 
             deck =
@@ -1061,13 +1215,11 @@
                     getSeed()
                 );
 
-
             drawnCards = [];
 
             document.getElementById(
                 "cardResults"
             ).innerHTML = "";
-
 
             renderCardPicker();
 
@@ -1342,7 +1494,7 @@
 
 
                 button.className =
-                    "joker-option";
+                    `joker-option ${i % 2 === 1 ? "red" : "black"}`;
 
 
                 if (excludedCards.has(id)) {
@@ -1516,68 +1668,71 @@
 
                 row.innerHTML = `
 
-                <div class="dial-name">
+                    <div class="dial-name">
+
+                        <input
+                            type="text"
+                            value="${escapeHtml(dial.name)}"
+                            placeholder="Dial name"
+                            onchange="
+                                updateDialName(
+                                    ${dial.id},
+                                    this.value
+                                )
+                            "
+                        >
+
+                    </div>
+
+                    <button
+                        class="dial-button"
+                        onclick="
+                            changeDial(
+                                ${dial.id},
+                                -1
+                            )
+                        "
+                    >
+                        −
+                    </button>
+
                     <input
-                        type="text"
-                        value="${escapeHtml(dial.name)}"
-                        placeholder="Dial name"
+                        class="dial-value"
+                        type="number"
+                        min="0"
+                        value="${dial.value}"
                         onchange="
-                            updateDialName(
+                            updateDialValue(
                                 ${dial.id},
                                 this.value
                             )
                         "
                     >
-                </div>
 
-                <button
-                    class="dial-button"
-                    onclick="
-                        changeDial(
-                            ${dial.id},
-                            -1
-                        )
-                    "
-                >
-                    −
-                </button>
+                    <button
+                        class="dial-button"
+                        onclick="
+                            changeDial(
+                                ${dial.id},
+                                1
+                            )
+                        "
+                    >
+                        +
+                    </button>
 
-                <input
-                    class="dial-value"
-                    type="number"
-                    min="0"
-                    value="${dial.value}"
-                    onchange="
-                        updateDialValue(
-                            ${dial.id},
-                            this.value
-                        )
-                    "
-                >
+                    <button
+                        class="dial-remove"
+                        onclick="
+                            removeDial(
+                                ${dial.id}
+                            )
+                        "
+                    >
+                        ✕
+                    </button>
 
-                <button
-                    class="dial-button"
-                    onclick="
-                        changeDial(
-                            ${dial.id},
-                            1
-                        )
-                    "
-                >
-                    +
-                </button>
-
-                <button
-                    class="dial-remove"
-                    onclick="
-                        removeDial(
-                            ${dial.id}
-                        )
-                    "
-                >
-                    ✕
-                </button>
-            `;
+                `;
 
 
                 container.appendChild(row);
